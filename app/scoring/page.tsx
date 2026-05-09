@@ -115,7 +115,7 @@ export default function ScoringPage() {
               <button
                 type="button"
                 onClick={() => setExpanded(isOpen ? null : item.no)}
-                className="flex w-full items-center gap-4 px-5 py-4 text-left"
+                className="flex w-full items-center gap-3 px-3 py-3 text-left sm:gap-4 sm:px-5 sm:py-4"
               >
                 {/* Score badge */}
                 <div
@@ -165,7 +165,7 @@ export default function ScoringPage() {
 
               {/* Expanded panel */}
               {isOpen && (
-                <div className="border-t border-border px-5 pb-5 pt-4">
+                <div className="border-t border-border px-3 pb-4 pt-4 sm:px-5 sm:pb-5">
                   <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
                     {/* Left: score picker + rubric */}
                     <div className="space-y-4">
@@ -174,7 +174,7 @@ export default function ScoringPage() {
                         <div className="mb-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                           Final score
                         </div>
-                        <div className="grid grid-cols-7 gap-2">
+                        <div className="grid grid-cols-7 gap-1 sm:gap-2">
                           {[0, 1, 2, 3, 4, 5, 6].map((n) => {
                             const active = final === n;
                             const c = scoreColor(n);

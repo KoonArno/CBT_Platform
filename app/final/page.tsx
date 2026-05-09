@@ -111,8 +111,10 @@ export default function FinalPage() {
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           {/* Main: tabs */}
           <div className="min-w-0 space-y-4">
-            <div className="flex items-center justify-between">
-              <Tabs<TabKey> options={TAB_OPTIONS} value={tab} onChange={setTab} />
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="-mx-1 overflow-x-auto px-1">
+                <Tabs<TabKey> options={TAB_OPTIONS} value={tab} onChange={setTab} />
+              </div>
               <Badge variant="outline" className="gap-1.5">
                 <ClipboardCheck className="h-3 w-3" />
                 {doneCount}/{CHECKLIST.length} checks done
@@ -246,8 +248,8 @@ function ScoreSummaryTab({
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-lg border border-border">
+        <table className="w-full min-w-[420px] text-sm">
           <thead className="bg-surface text-[11px] uppercase tracking-wide text-muted-foreground">
             <tr>
               <th className="px-3 py-2 text-left font-semibold">Domain</th>

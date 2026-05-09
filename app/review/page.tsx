@@ -144,7 +144,7 @@ export default function ReviewPage() {
                   12
                 </span>
               </div>
-              <div className="max-h-[calc(100vh-220px)] overflow-y-auto p-2">
+              <div className="p-2 lg:max-h-[calc(100vh-220px)] lg:overflow-y-auto">
                 <button
                   type="button"
                   onClick={() => setActiveItem("all")}
@@ -227,7 +227,7 @@ export default function ReviewPage() {
               </Button>
             </div>
 
-            <div className="max-h-[calc(100vh-220px)] space-y-3 overflow-y-auto p-4">
+            <div className="space-y-3 p-4 lg:max-h-[calc(100vh-220px)] lg:overflow-y-auto">
               {filteredEvidence.length === 0 && (
                 <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border bg-surface-muted p-12 text-center">
                   <Inbox className="h-6 w-6 text-muted-foreground/60" />
@@ -381,7 +381,7 @@ export default function ReviewPage() {
                 )}
               </div>
 
-              <div className="max-h-[calc(100vh-340px)] space-y-3 overflow-y-auto p-4">
+              <div className="space-y-3 p-4 lg:max-h-[calc(100vh-340px)] lg:overflow-y-auto">
                 {filteredTranscript.length === 0 && (
                   <div className="rounded-lg border border-dashed border-border bg-surface-muted p-8 text-center text-xs text-muted-foreground">
                     No matching paragraphs.

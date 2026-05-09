@@ -180,7 +180,7 @@ export default function ReportPage() {
 
             {/* Paper */}
             <div className="max-h-[calc(100vh-220px)] overflow-y-auto rounded-lg border border-border bg-card shadow-inner">
-              <div className="space-y-8 px-8 py-8">
+              <div className="space-y-8 px-4 py-6 sm:px-8 sm:py-8">
                 {/* Header */}
                 <div className="border-b border-border pb-6">
                   <div className="text-[11px] font-semibold uppercase tracking-widest text-primary">
@@ -233,7 +233,8 @@ export default function ReportPage() {
                 {sections.perItem && (
                   <section className="space-y-3">
                     <SectionTitle>Score Breakdown</SectionTitle>
-                    <table className="w-full text-sm">
+                    <div className="-mx-1 overflow-x-auto">
+                    <table className="w-full min-w-[320px] text-sm">
                       <thead>
                         <tr className="border-b border-border text-xs text-muted-foreground">
                           <th className="py-2 text-left font-medium">CTS-R Item</th>
@@ -287,6 +288,7 @@ export default function ReportPage() {
                         })}
                       </tbody>
                     </table>
+                    </div>
                   </section>
                 )}
 

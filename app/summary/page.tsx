@@ -110,8 +110,8 @@ export default function SummaryPage() {
         }
       />
 
-      <div className="px-4 py-6 sm:px-6 lg:px-8">
-        <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
+      <div className="max-w-full overflow-hidden px-4 py-6 sm:px-6 lg:px-8">
+        <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
          <div className="space-y-6 min-w-0">
           {/* KPI row */}
           <div className="grid gap-3 sm:grid-cols-2">
@@ -132,24 +132,28 @@ export default function SummaryPage() {
             />
           </div>
           {/* Radar + Strengths/Dev side-by-side */}
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid min-w-0 gap-6 md:grid-cols-2">
             {/* Radar (left, taller) */}
-            <div className="flex flex-col rounded-xl border border-border bg-card shadow-sm">
-              <div className="flex items-center justify-between border-b border-border px-5 py-3">
+            <div className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5 py-3">
                 <div className="flex items-center gap-2">
                   <Target className="h-4 w-4 text-primary" />
                   <h3 className="text-sm font-semibold">Competency profile</h3>
                 </div>
                 <span className="text-[11px] text-muted-foreground">12 items × 0–6</span>
               </div>
-              <div className="flex-1 p-4">
-                <div className="h-full min-h-[380px] w-full">
+              <div className="p-2 sm:p-4">
+                <div className="h-[260px] min-w-0 sm:h-[380px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <RadarChart data={RADAR_DATA} outerRadius="78%">
+                    <RadarChart
+                      data={RADAR_DATA}
+                      outerRadius="58%"
+                      margin={{ top: 18, right: 24, bottom: 18, left: 24 }}
+                    >
                       <PolarGrid stroke="var(--border)" />
                       <PolarAngleAxis
                         dataKey="name"
-                        tick={{ fill: "var(--muted-foreground)", fontSize: 10 }}
+                        tick={{ fill: "var(--muted-foreground)", fontSize: 8 }}
                       />
                       <Radar
                         dataKey="value"
@@ -164,7 +168,7 @@ export default function SummaryPage() {
             </div>
 
             {/* Strengths + Development stacked (right) */}
-            <div className="grid gap-4 grid-rows-2">
+            <div className="grid min-w-0 gap-4 md:grid-rows-2">
               <SidePanel
                 icon={<TrendingUp className="h-4 w-4" />}
                 title="Strengths"
@@ -190,12 +194,12 @@ export default function SummaryPage() {
           </div>
 
           {/* Feedback for Student — inside left column */}
-          <div className="rounded-xl border border-border bg-card shadow-sm">
-            <div className="flex items-center justify-between border-b border-border px-5 py-3">
+          <div className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5 py-3">
               <h3 className="text-sm font-semibold">Feedback for Student</h3>
               <span className="text-[11px] text-muted-foreground">ข้อเสนอแนะสำหรับผู้ฝึก</span>
             </div>
-            <div className="flex flex-col gap-4 p-5">
+            <div className="flex min-w-0 flex-col gap-4 p-5">
               {FEEDBACK_FIELDS.map((f) => (
                 <div key={f.key} className="space-y-1.5">
                   <Label htmlFor={`fb-${f.key}`}>
@@ -208,7 +212,7 @@ export default function SummaryPage() {
                     value={feedback[f.key]}
                     onChange={(e) => setFeedback((p) => ({ ...p, [f.key]: e.target.value }))}
                     placeholder={`เขียน${f.label}...`}
-                    className="resize-none"
+                    className="max-w-full resize-none"
                   />
                 </div>
               ))}
@@ -217,8 +221,8 @@ export default function SummaryPage() {
          </div>
 
           {/* Item breakdown by category — right column, full height */}
-          <div className="rounded-xl border border-border bg-card shadow-sm self-start lg:sticky lg:top-4">
-          <div className="flex items-center justify-between border-b border-border px-5 py-3">
+          <div className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-sm self-start lg:sticky lg:top-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5 py-3">
             <h3 className="text-sm font-semibold">Item breakdown</h3>
             {/* Gradient legend */}
             <div className="flex items-center gap-2">

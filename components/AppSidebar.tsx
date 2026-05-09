@@ -61,16 +61,6 @@ export function AppSidebar() {
         </div>
       </div>
 
-      {/* Desktop collapse-expand button */}
-      {collapsed && (
-        <button
-          onClick={() => setCollapsed(false)}
-          aria-label="Expand sidebar"
-          className="fixed left-3 top-3 z-40 hidden h-9 w-9 items-center justify-center rounded-md border border-border bg-background shadow-sm hover:bg-accent md:flex"
-        >
-          <PanelLeft className="h-4 w-4" />
-        </button>
-      )}
 
       {/* Mobile drawer overlay */}
       {mobileOpen && (
@@ -81,23 +71,40 @@ export function AppSidebar() {
         />
       )}
 
-      {/* Sidebar (desktop fixed, mobile drawer) */}
+      {/* Sidebar (desktop sticky, mobile drawer) */}
       <aside
         className={cn(
           "shrink-0 flex-col border-r border-border bg-sidebar transition-all duration-200",
-          // Desktop
-          "hidden md:flex",
-          collapsed ? "md:w-0 md:overflow-hidden md:border-r-0" : "md:w-60",
+          // Desktop: sticky to viewport so footer stays visible on long pages
+          "hidden md:sticky md:top-0 md:flex md:h-screen",
+          collapsed ? "md:w-16 md:overflow-hidden" : "md:w-60",
           // Mobile drawer override
           mobileOpen &&
-            "fixed inset-y-0 left-0 z-50 !flex w-64 max-w-[80vw] !overflow-visible md:relative",
+            "fixed inset-y-0 left-0 z-50 !flex h-screen w-64 max-w-[80vw] !overflow-visible md:relative",
         )}
       >
-        <div className="flex items-center gap-2 border-b border-sidebar-border px-5 py-5">
-          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+        <div
+          className={cn(
+            "flex items-center border-b border-sidebar-border transition-all",
+            collapsed
+              ? "md:justify-center md:px-3 md:py-4"
+              : "gap-2 px-5 py-5",
+          )}
+        >
+          <div
+            className={cn(
+              "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground",
+              collapsed && "md:hidden",
+            )}
+          >
             <Stethoscope className="h-5 w-5" />
           </div>
-          <div className="min-w-0 flex-1 leading-tight">
+          <div
+            className={cn(
+              "min-w-0 flex-1 leading-tight",
+              collapsed && "md:hidden",
+            )}
+          >
             <div className="text-sm font-semibold text-sidebar-foreground">
               CTS-R Review
             </div>
@@ -105,20 +112,27 @@ export function AppSidebar() {
           </div>
           <button
             onClick={() =>
-              mobileOpen ? setMobileOpen(false) : setCollapsed(true)
+              mobileOpen ? setMobileOpen(false) : setCollapsed((p) => !p)
             }
-            aria-label="Collapse sidebar"
+            aria-label="Toggle sidebar"
             className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground"
           >
             {mobileOpen ? (
               <X className="h-4 w-4" />
+            ) : collapsed ? (
+              <PanelLeft className="h-4 w-4" />
             ) : (
               <PanelLeftClose className="h-4 w-4" />
             )}
           </button>
         </div>
 
-        <nav className="flex-1 space-y-1 px-3 py-4">
+        <nav
+          className={cn(
+            "flex-1 space-y-1 overflow-y-auto py-4",
+            collapsed ? "md:px-2" : "px-3",
+          )}
+        >
           {ITEMS.map((it) => {
             const active = isActive(it);
             const Icon = it.icon;
@@ -132,6 +146,7 @@ export function AppSidebar() {
                   active
                     ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
                     : "text-sidebar-foreground hover:bg-sidebar-accent/60",
+                  collapsed && "md:justify-center md:px-2",
                 )}
               >
                 <Icon
@@ -140,7 +155,12 @@ export function AppSidebar() {
                     active ? "text-primary" : "text-muted-foreground",
                   )}
                 />
-                <div className="flex flex-col leading-tight">
+                <div
+                  className={cn(
+                    "flex flex-col leading-tight",
+                    collapsed && "md:hidden",
+                  )}
+                >
                   <span>{it.label}</span>
                   <span className="text-[10px] text-muted-foreground">
                     {it.sub}
@@ -151,7 +171,12 @@ export function AppSidebar() {
           })}
         </nav>
 
-        <div className="border-t border-sidebar-border p-4">
+        <div
+          className={cn(
+            "border-t border-sidebar-border p-4",
+            collapsed && "md:hidden",
+          )}
+        >
           <div className="rounded-md bg-accent/60 p-3">
             <div className="text-xs font-medium text-accent-foreground">
               Supervisor Mode

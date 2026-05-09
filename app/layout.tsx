@@ -18,7 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased">
         <MuiProvider>
-          <div className="flex min-h-screen w-full bg-background">
+          <div className="flex min-h-screen w-full flex-col bg-background md:flex-row">
             <AppSidebar />
             <main className="min-w-0 flex-1">{children}</main>
           </div>
