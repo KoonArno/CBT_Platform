@@ -1,31 +1,71 @@
-import type { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
+import type {
+  InputHTMLAttributes,
+  TextareaHTMLAttributes,
+  SelectHTMLAttributes,
+  LabelHTMLAttributes,
+} from "react";
 import { cn } from "@/lib/utils";
 
-const BASE =
-  "w-full rounded-lg border-[1.5px] border-rule bg-canvas px-3 py-2 text-[13px] text-ink outline-none placeholder:text-ink-faint focus:border-brand";
-
-export function Input(props: InputHTMLAttributes<HTMLInputElement>) {
-  return <input {...props} className={cn(BASE, props.className)} />;
-}
-
-export function Textarea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
+export function Input({
+  className,
+  ...rest
+}: InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <textarea
-      {...props}
-      className={cn(BASE, "resize-y leading-relaxed", props.className)}
+    <input
+      className={cn(
+        "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors",
+        "placeholder:text-muted-foreground",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        className,
+      )}
+      {...rest}
     />
   );
 }
 
-export function Select(props: InputHTMLAttributes<HTMLSelectElement> & { children: React.ReactNode }) {
-  const { children, ...rest } = props as InputHTMLAttributes<HTMLSelectElement> & { children: React.ReactNode };
+export function Textarea({
+  className,
+  ...rest
+}: TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
-    <select {...rest} className={cn(BASE, props.className)}>
-      {children}
-    </select>
+    <textarea
+      className={cn(
+        "flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm",
+        "placeholder:text-muted-foreground",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        className,
+      )}
+      {...rest}
+    />
   );
 }
 
-export function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <div className="eyebrow mb-2">{children}</div>;
+export function Select({
+  className,
+  ...rest
+}: SelectHTMLAttributes<HTMLSelectElement>) {
+  return (
+    <select
+      className={cn(
+        "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        className,
+      )}
+      {...rest}
+    />
+  );
+}
+
+export function Label({ className, ...rest }: LabelHTMLAttributes<HTMLLabelElement>) {
+  return (
+    <label
+      className={cn(
+        "text-xs font-medium uppercase tracking-wide text-muted-foreground",
+        className,
+      )}
+      {...rest}
+    />
+  );
 }

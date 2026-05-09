@@ -1,43 +1,50 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-type Variant = "primary" | "orange" | "ghost" | "muted" | "success" | "warn" | "danger" | "purple";
+type Variant = "default" | "outline" | "ghost" | "secondary" | "destructive";
+type Size = "default" | "sm" | "lg" | "icon";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
-  full?: boolean;
-  children: ReactNode;
+  size?: Size;
 }
 
 const VARIANTS: Record<Variant, string> = {
-  primary: "bg-brand text-white border-transparent hover:bg-brand-dark",
-  orange:  "bg-accent-orange text-white border-transparent hover:brightness-95",
-  ghost:   "bg-transparent text-brand border-brand border-[1.5px] hover:bg-brand-tint",
-  muted:   "bg-slate-100 text-ink-muted border-transparent hover:bg-slate-200",
-  success: "bg-state-goodBg text-state-good border-transparent",
-  warn:    "bg-state-warnBg text-state-warn border-transparent",
-  danger:  "bg-state-badBg text-state-bad border-transparent",
-  purple:  "bg-state-purpleBg text-accent-purple border-transparent",
+  default:
+    "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
+  outline:
+    "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+  ghost: "hover:bg-accent hover:text-accent-foreground",
+  secondary:
+    "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+  destructive:
+    "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+};
+
+const SIZES: Record<Size, string> = {
+  default: "h-9 px-4 text-sm",
+  sm: "h-8 px-3 text-xs",
+  lg: "h-10 px-6 text-sm",
+  icon: "h-9 w-9",
 };
 
 export function Button({
-  variant = "primary",
-  full = false,
   className,
-  children,
+  variant = "default",
+  size = "default",
   ...rest
 }: ButtonProps) {
   return (
     <button
-      {...rest}
       className={cn(
-        "inline-flex items-center justify-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-bold transition disabled:opacity-50 disabled:cursor-not-allowed",
+        "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "disabled:pointer-events-none disabled:opacity-50",
         VARIANTS[variant],
-        full && "w-full",
+        SIZES[size],
         className,
       )}
-    >
-      {children}
-    </button>
+      {...rest}
+    />
   );
 }

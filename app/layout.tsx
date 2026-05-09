@@ -1,18 +1,12 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
 import "./globals.css";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  variable: "--font-outfit",
-  display: "swap",
-});
+import { AppSidebar } from "@/components/AppSidebar";
+import { MuiProvider } from "@/components/providers/MuiProvider";
 
 export const metadata: Metadata = {
-  title: "Thera — CBT Supervision Platform",
+  title: "CBT Supinsight — CTS-R Review Assistant",
   description:
-    "AI-augmented CBT supervision platform with CTS-R scoring, transcript analysis, and competency tracking.",
+    "AI-augmented supervisor workflow for evaluating CTS-R from CBT session transcripts.",
 };
 
 export default function RootLayout({
@@ -21,8 +15,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={outfit.variable}>
-      <body className="font-sans">{children}</body>
+    <html lang="en">
+      <body className="font-sans antialiased">
+        <MuiProvider>
+          <div className="flex min-h-screen w-full bg-background">
+            <AppSidebar />
+            <main className="min-w-0 flex-1">{children}</main>
+          </div>
+        </MuiProvider>
+      </body>
     </html>
   );
 }

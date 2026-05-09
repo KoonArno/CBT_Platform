@@ -4,32 +4,92 @@
 
 @layer base {
   :root {
-    --font-outfit: "Outfit", system-ui, sans-serif;
+    --radius: 0.625rem;
+
+    /* Clinical SaaS palette */
+    --background: oklch(0.985 0.005 240);
+    --surface: oklch(0.975 0.008 240);
+    --surface-muted: oklch(0.955 0.01 240);
+    --foreground: oklch(0.22 0.04 250);
+
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.22 0.04 250);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.22 0.04 250);
+
+    /* Navy primary */
+    --primary: oklch(0.32 0.09 255);
+    --primary-foreground: oklch(0.985 0.005 240);
+
+    --secondary: oklch(0.96 0.012 245);
+    --secondary-foreground: oklch(0.28 0.06 255);
+
+    --muted: oklch(0.96 0.008 245);
+    --muted-foreground: oklch(0.52 0.03 250);
+
+    /* Blue accent */
+    --accent: oklch(0.93 0.04 240);
+    --accent-foreground: oklch(0.32 0.09 255);
+
+    --destructive: oklch(0.6 0.21 25);
+    --destructive-foreground: oklch(0.99 0.005 240);
+
+    --success: oklch(0.62 0.15 155);
+    --success-foreground: oklch(0.99 0.005 240);
+
+    --warning: oklch(0.78 0.14 75);
+    --warning-foreground: oklch(0.22 0.04 250);
+
+    --border: oklch(0.92 0.01 245);
+    --input: oklch(0.92 0.01 245);
+    --ring: oklch(0.55 0.13 245);
+
+    /* CTS-R item highlight tints */
+    --cts-1: oklch(0.85 0.1 250);
+    --cts-2: oklch(0.85 0.1 210);
+    --cts-3: oklch(0.85 0.1 180);
+    --cts-4: oklch(0.85 0.1 155);
+    --cts-5: oklch(0.85 0.1 125);
+    --cts-6: oklch(0.88 0.11 90);
+    --cts-7: oklch(0.85 0.12 60);
+    --cts-8: oklch(0.85 0.12 30);
+    --cts-9: oklch(0.85 0.12 10);
+    --cts-10: oklch(0.85 0.11 340);
+    --cts-11: oklch(0.85 0.1 310);
+    --cts-12: oklch(0.85 0.1 280);
+
+    --sidebar: oklch(1 0 0);
+    --sidebar-foreground: oklch(0.3 0.04 250);
+    --sidebar-primary: oklch(0.32 0.09 255);
+    --sidebar-primary-foreground: oklch(0.985 0.005 240);
+    --sidebar-accent: oklch(0.96 0.012 245);
+    --sidebar-accent-foreground: oklch(0.32 0.09 255);
+    --sidebar-border: oklch(0.92 0.01 245);
+    --sidebar-ring: oklch(0.55 0.13 245);
+  }
+
+  * {
+    border-color: var(--border);
   }
 
   html,
   body {
-    @apply bg-canvas text-ink antialiased;
+    background-color: var(--background);
+    color: var(--foreground);
   }
 
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-canvas;
+    background: var(--surface-muted);
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-rule rounded;
+    background: var(--border);
+    border-radius: 8px;
   }
-
-  button:active {
-    transform: scale(0.97);
-  }
-}
-
-@layer components {
-  .eyebrow {
-    @apply text-[11px] font-bold uppercase tracking-eyebrow text-ink-muted;
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
   }
 }
