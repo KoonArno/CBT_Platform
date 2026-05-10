@@ -1,18 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
-  ArrowRight,
   FileDown,
   FileText,
   Check,
   MessageSquare,
+  Send,
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { CTS_R, SCORE_LABELS, scoreLabel } from "@/lib/cts-data";
-import { AI_SCORES, AI_EVIDENCE, CURRENT_SESSION, MOCK_STUDENT_FEEDBACK } from "@/lib/mock-data";
+import { AI_SCORES, CURRENT_SESSION, MOCK_STUDENT_FEEDBACK } from "@/lib/mock-data";
 import { cn, formatDate } from "@/lib/utils";
 
 const TOTAL = AI_SCORES.reduce((a, s) => a + (s.finalScore ?? 0), 0);
@@ -31,35 +32,27 @@ const SCORE_COLORS: Record<number, { bg: string; text: string; bar: string }> = 
 const SECTIONS = [
   { k: "overall", label: "สรุปคะแนนรวม", sub: "Total · Average" },
   { k: "perItem", label: "รายละเอียดคะแนน", sub: "12 items × 0–6" },
-  { k: "evidence", label: "Evidence ที่เลือก", sub: "Confirmed + manual" },
-  { k: "narrative", label: "Supervisor narrative", sub: "Strengths & development" },
-  { k: "feedback", label: "Feedback for Student", sub: "จุดแข็ง · พัฒนา · ข้อเสนอแนะ" },
+  { k: "feedback", label: "Feedback", sub: "จุดแข็ง · พัฒนา · ข้อเสนอแนะ" },
 ] as const;
 
 type SectionKey = typeof SECTIONS[number]["k"];
-
-const MOCK_NARRATIVE = {
-  strengths:
-    "The therapist demonstrated solid CBT structure with notable strengths in empathy and Socratic dialogue. Emotional reflection was accurate and well-timed, and the session formulation drove technique selection effectively.",
-  development:
-    "• Strengthen rationale-giving for behavioural experiments\n• Use mid-session feedback bridges, not just end-of-session\n• Tighter homework troubleshooting to anticipate client obstacles",
-  action: "Bring a 5-minute audio clip of homework setting; review BE protocol together in next supervision.",
-};
 
 export default function ReportPage() {
   const [sections, setSections] = useState<Record<SectionKey, boolean>>({
     overall: true,
     perItem: true,
-    evidence: true,
-    narrative: true,
     feedback: true,
   });
   const [format, setFormat] = useState<"pdf" | "word">("pdf");
   const [generated, setGenerated] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const router = useRouter();
 
-  const confirmedEvidence = AI_EVIDENCE.filter(
-    (e) => e.status === "confirmed" || e.status === "manual",
-  );
+  const handleSubmit = () => {
+    setSubmitting(true);
+    toast.success("ส่งการประเมินเรียบร้อยแล้ว");
+    setTimeout(() => router.push("/sessions"), 600);
+  };
 
   const toggle = (k: SectionKey) =>
     setSections((p) => ({ ...p, [k]: !p[k] }));
@@ -69,13 +62,6 @@ export default function ReportPage() {
       <PageHeader
         title="Supervision Report"
         subtitle="เลือกส่วนที่ต้องการรวมในรายงาน แล้ว Generate"
-        right={
-          <Link href="/final">
-            <Button>
-              Final Review <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        }
       />
 
       <div className="grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-12 lg:px-8">
@@ -151,9 +137,22 @@ export default function ReportPage() {
           <Button
             className="w-full"
             size="lg"
-            onClick={() => setGenerated(true)}
+            onClick={() => {
+              setGenerated(true);
+              toast.success("สร้าง Report สำเร็จ");
+            }}
           >
             <FileDown className="h-4 w-4" /> สร้าง Report
+          </Button>
+
+          <Button
+            className="w-full"
+            size="lg"
+            variant="outline"
+            onClick={handleSubmit}
+            disabled={submitting}
+          >
+            <Send className="h-4 w-4" /> Submit Evaluation
           </Button>
 
           {generated && (
@@ -189,13 +188,14 @@ export default function ReportPage() {
                   <h2 className="mt-1 text-2xl font-bold text-foreground">
                     รายงานการประเมินทักษะการบำบัดทางความคิดและพฤติกรรม
                   </h2>
-                  <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-                    <MetaField label="Session" value={CURRENT_SESSION.id} />
+                  <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
                     <MetaField label="Therapist" value={CURRENT_SESSION.therapist} />
-                    <MetaField label="Modality" value={CURRENT_SESSION.modality} />
-                    <MetaField label="Date" value={formatDate(CURRENT_SESSION.date)} />
+                    <MetaField
+                      label="Client & Session No."
+                      value={`${CURRENT_SESSION.client} · ${CURRENT_SESSION.id}`}
+                    />
                     <MetaField label="Supervisor" value="Dr. Wattana" />
-                    <MetaField label="Client" value={CURRENT_SESSION.client} />
+                    <MetaField label="Session Date" value={formatDate(CURRENT_SESSION.date)} />
                   </div>
                 </div>
 
@@ -292,80 +292,11 @@ export default function ReportPage() {
                   </section>
                 )}
 
-                {/* Evidence */}
-                {sections.evidence && (
-                  <section className="space-y-3">
-                    <SectionTitle>Selected Evidence</SectionTitle>
-                    <div className="space-y-2">
-                      {confirmedEvidence.map((ev) => {
-                        const item = CTS_R.find((c) => c.no === ev.itemNo)!;
-                        return (
-                          <div
-                            key={ev.id}
-                            className="rounded-lg border border-border bg-surface p-3"
-                          >
-                            <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-                              <span
-                                className="h-3 w-3 rounded-full"
-                                style={{ background: item.colorVar }}
-                              />
-                              <span className="font-medium">{item.name}</span>
-                              <span className="text-border">·</span>
-                              <span className="font-mono">{ev.ref}</span>
-                              {ev.status === "manual" && (
-                                <span className="rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-semibold uppercase">
-                                  Manual
-                                </span>
-                              )}
-                            </div>
-                            <p className="mt-1.5 text-sm italic text-foreground/80">
-                              "{ev.quote}"
-                            </p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </section>
-                )}
-
-                {/* Narrative */}
-                {sections.narrative && (
-                  <section className="space-y-4">
-                    <SectionTitle>Supervisor Narrative</SectionTitle>
-                    <div className="space-y-3">
-                      <div>
-                        <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-success">
-                          Strengths
-                        </div>
-                        <p className="text-sm leading-relaxed text-foreground/90">
-                          {MOCK_NARRATIVE.strengths}
-                        </p>
-                      </div>
-                      <div>
-                        <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-warning">
-                          Development goals
-                        </div>
-                        <p className="whitespace-pre-line text-sm leading-relaxed text-foreground/90">
-                          {MOCK_NARRATIVE.development}
-                        </p>
-                      </div>
-                      <div>
-                        <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-primary">
-                          Action items
-                        </div>
-                        <p className="text-sm leading-relaxed text-foreground/90">
-                          {MOCK_NARRATIVE.action}
-                        </p>
-                      </div>
-                    </div>
-                  </section>
-                )}
-
-                {/* Feedback for Student */}
+                {/* Feedback */}
                 {sections.feedback && (
                   <section className="space-y-4">
                     <SectionTitle>
-                      <MessageSquare className="h-3.5 w-3.5" /> Feedback for Student
+                      <MessageSquare className="h-3.5 w-3.5" /> Feedback
                     </SectionTitle>
                     <div className="space-y-3">
                       <div>

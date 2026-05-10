@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import {
   ArrowRight,
   Check,
@@ -12,6 +13,9 @@ import {
   Sparkles,
   Inbox,
   FileText,
+  Undo2,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { SpeakerAvatar } from "@/components/SpeakerAvatar";
@@ -44,6 +48,8 @@ export default function ReviewPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [showFilter, setShowFilter] = useState(false);
+  const [transcriptExpanded, setTranscriptExpanded] = useState(false);
+  const [taggingParagraphId, setTaggingParagraphId] = useState<string | null>(null);
   const transcriptRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const counts = useMemo(() => {
@@ -54,11 +60,20 @@ export default function ReviewPage() {
 
   const filteredEvidence = useMemo(
     () =>
-      evidence.filter((e) => {
-        if (activeItem !== "all" && e.itemNo !== activeItem) return false;
-        if (statusFilter !== "all" && e.status !== statusFilter) return false;
-        return true;
-      }),
+      evidence
+        .filter((e) => {
+          if (activeItem !== "all" && e.itemNo !== activeItem) return false;
+          if (statusFilter !== "all" && e.status !== statusFilter) return false;
+          return true;
+        })
+        .map((e, i) => ({ e, i }))
+        .sort((a, b) => {
+          const ac = a.e.status === "confirmed" ? 1 : 0;
+          const bc = b.e.status === "confirmed" ? 1 : 0;
+          if (ac !== bc) return ac - bc;
+          return a.i - b.i;
+        })
+        .map((x) => x.e),
     [evidence, activeItem, statusFilter],
   );
 
@@ -84,12 +99,59 @@ export default function ReviewPage() {
 
   const itemMeta = (no: number) => CTS_R.find((c) => c.no === no)!;
 
-  const confirm = (id: string) =>
+  const confirm = (id: string) => {
     setEvidence((prev) =>
       prev.map((e) => (e.id === id ? { ...e, status: "confirmed" } : e)),
     );
-  const remove = (id: string) =>
+    toast.success("ยืนยัน evidence แล้ว");
+  };
+  const unconfirm = (id: string) => {
+    setEvidence((prev) =>
+      prev.map((e) => (e.id === id ? { ...e, status: "suggested" } : e)),
+    );
+    toast("ยกเลิกการยืนยัน");
+  };
+  const remove = (id: string) => {
+    const target = evidence.find((e) => e.id === id);
     setEvidence((prev) => prev.filter((e) => e.id !== id));
+    toast("ลบ evidence แล้ว", {
+      action: target
+        ? {
+            label: "Undo",
+            onClick: () => setEvidence((prev) => [...prev, target]),
+          }
+        : undefined,
+    });
+  };
+
+  const taggingParagraph = useMemo(
+    () =>
+      taggingParagraphId
+        ? TRANSCRIPT.find((p) => p.id === taggingParagraphId) ?? null
+        : null,
+    [taggingParagraphId],
+  );
+
+  const tagParagraph = (itemNo: number) => {
+    const p = taggingParagraph;
+    if (!p) return;
+    const newId = `ev-manual-${p.id}-${itemNo}-${Date.now()}`;
+    setEvidence((prev) => [
+      ...prev,
+      {
+        id: newId,
+        itemNo,
+        paragraphId: p.id,
+        ref: p.ts,
+        quote: p.text,
+        status: "manual",
+      },
+    ]);
+    setActiveEvidenceId(newId);
+    setTaggingParagraphId(null);
+    const item = CTS_R.find((c) => c.no === itemNo);
+    toast.success(`ติดป้าย ${item?.no}. ${item?.short ?? ""} แล้ว`);
+  };
 
   const confirmedCount = evidence.filter(
     (e) => e.status === "confirmed" || e.status === "manual",
@@ -210,6 +272,7 @@ export default function ReviewPage() {
         </aside>
 
         {/* MIDDLE: Evidence */}
+        {!transcriptExpanded && (
         <section className="lg:col-span-5">
           <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
             <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
@@ -232,10 +295,10 @@ export default function ReviewPage() {
                 <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border bg-surface-muted p-12 text-center">
                   <Inbox className="h-6 w-6 text-muted-foreground/60" />
                   <div className="text-sm font-medium text-foreground/70">
-                    No evidence in this category
+                    ไม่พบหลักฐานในหมวดนี้
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    Try a different item or add a quote manually.
+                    ลอง search ด้วย Keywords ที่เกี่ยวข้องกับเกณฑ์ข้อนี้ในเมนูด้านขวาเพื่อติดป้ายกำกับเพิ่มเติม
                   </div>
                 </div>
               )}
@@ -287,28 +350,44 @@ export default function ReviewPage() {
                         {meta.cat}
                       </span>
                       <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            confirm(ev.id);
-                          }}
-                          className="inline-flex items-center gap-1 rounded-md border border-success/30 bg-success/10 px-2 py-1 text-[11px] font-medium text-success transition-colors hover:bg-success/20"
-                          aria-label="Confirm evidence"
-                        >
-                          <Check className="h-3 w-3" /> Confirm
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            remove(ev.id);
-                          }}
-                          className="inline-flex items-center gap-1 rounded-md border border-destructive/20 bg-card px-2 py-1 text-[11px] font-medium text-destructive transition-colors hover:bg-destructive/10"
-                          aria-label="Remove evidence"
-                        >
-                          <X className="h-3 w-3" /> Remove
-                        </button>
+                        {ev.status === "confirmed" ? (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              unconfirm(ev.id);
+                            }}
+                            className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-1 text-[11px] font-medium text-foreground/70 transition-colors hover:bg-muted"
+                            aria-label="Undo confirmation"
+                          >
+                            <Undo2 className="h-3 w-3" /> Undo
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              confirm(ev.id);
+                            }}
+                            className="inline-flex items-center gap-1 rounded-md border border-success/30 bg-success/10 px-2 py-1 text-[11px] font-medium text-success transition-colors hover:bg-success/20"
+                            aria-label="Confirm evidence"
+                          >
+                            <Check className="h-3 w-3" /> Confirm
+                          </button>
+                        )}
+                        {ev.status !== "confirmed" && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              remove(ev.id);
+                            }}
+                            className="inline-flex items-center gap-1 rounded-md border border-destructive/20 bg-card px-2 py-1 text-[11px] font-medium text-destructive transition-colors hover:bg-destructive/10"
+                            aria-label="Remove evidence"
+                          >
+                            <X className="h-3 w-3" /> Remove
+                          </button>
+                        )}
                       </div>
                     </div>
                   </article>
@@ -317,22 +396,37 @@ export default function ReviewPage() {
             </div>
           </div>
         </section>
+        )}
 
         {/* RIGHT: Transcript */}
-        <section className="lg:col-span-4">
+        <section className={cn(transcriptExpanded ? "lg:col-span-9" : "lg:col-span-4")}>
           <div className="lg:sticky lg:top-6">
             <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-              <div className="border-b border-border px-5 py-3.5">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-3.5 w-3.5 text-primary" />
-                  <h3 className="text-sm font-semibold">Full transcript</h3>
+              <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-3.5">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-3.5 w-3.5 text-primary" />
+                    <h3 className="text-sm font-semibold">Full transcript</h3>
+                  </div>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Click a paragraph to label it as evidence.
+                  </p>
+                  <p className="mt-1 truncate font-mono text-[10px] text-muted-foreground/70">
+                    {SESSION_META.fileName}
+                  </p>
                 </div>
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  Click a paragraph to label it as evidence.
-                </p>
-                <p className="mt-1 truncate font-mono text-[10px] text-muted-foreground/70">
-                  {SESSION_META.fileName}
-                </p>
+                <button
+                  type="button"
+                  onClick={() => setTranscriptExpanded((v) => !v)}
+                  aria-label={transcriptExpanded ? "Collapse transcript" : "Expand transcript"}
+                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:border-primary/40 hover:bg-accent hover:text-foreground"
+                >
+                  {transcriptExpanded ? (
+                    <Minimize2 className="h-3.5 w-3.5" />
+                  ) : (
+                    <Maximize2 className="h-3.5 w-3.5" />
+                  )}
+                </button>
               </div>
 
               <div className="border-b border-border px-4 py-3">
@@ -399,10 +493,16 @@ export default function ReviewPage() {
                       ref={(el) => {
                         transcriptRefs.current[p.id] = el;
                       }}
-                      onClick={() => linked && setActiveEvidenceId(linked.id)}
+                      onClick={() => {
+                        if (linked) {
+                          setActiveEvidenceId(linked.id);
+                        } else if (isTherapist) {
+                          setTaggingParagraphId(p.id);
+                        }
+                      }}
                       className={cn(
                         "group flex gap-2.5 transition-all",
-                        linked && "cursor-pointer",
+                        (linked || isTherapist) && "cursor-pointer",
                       )}
                     >
                       <SpeakerAvatar speaker={p.speaker} />
@@ -469,7 +569,116 @@ export default function ReviewPage() {
           </div>
         </section>
       </div>
+
+      {taggingParagraph && (
+        <TagModal
+          paragraph={taggingParagraph}
+          onClose={() => setTaggingParagraphId(null)}
+          onSelect={tagParagraph}
+        />
+      )}
     </>
+  );
+}
+
+function TagModal({
+  paragraph,
+  onClose,
+  onSelect,
+}: {
+  paragraph: { id: string; ts: string; speaker: string; text: string };
+  onClose: () => void;
+  onSelect: (itemNo: number) => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="max-h-[90vh] w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
+      >
+        <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
+          <h3 className="text-base font-semibold text-foreground">
+            ติดป้าย CTS-R Item
+          </h3>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="max-h-[calc(90vh-64px)] overflow-y-auto px-5 py-4">
+          <div className="flex items-start justify-between gap-3 rounded-lg border border-border bg-surface px-4 py-3">
+            <div className="min-w-0">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {paragraph.speaker}
+              </div>
+              <p className="mt-1 text-sm text-foreground/90">
+                &ldquo;{paragraph.text}&rdquo;
+              </p>
+            </div>
+            <span className="flex-shrink-0 font-mono text-[11px] text-muted-foreground">
+              {paragraph.ts}
+            </span>
+          </div>
+
+          <p className="mt-4 text-xs text-muted-foreground">
+            เลือก label เพื่อบันทึกข้อความนี้เป็น evidence สำหรับการให้คะแนน
+          </p>
+
+          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {CTS_R.map((it) => (
+              <button
+                key={it.no}
+                type="button"
+                onClick={() => onSelect(it.no)}
+                className="group flex items-start gap-3 rounded-lg border border-border bg-card px-3 py-2.5 text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-sm"
+              >
+                <span
+                  className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md text-xs font-bold text-foreground/70 ring-1 ring-black/5"
+                  style={{ backgroundColor: it.colorVar }}
+                >
+                  {it.no}
+                </span>
+                <span className="min-w-0 flex-1 leading-tight">
+                  <span className="block text-sm font-medium text-foreground">
+                    {it.name}
+                  </span>
+                  <span className="mt-0.5 block text-[11px] text-muted-foreground">
+                    {it.nameTh}
+                  </span>
+                </span>
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={onClose}
+              className="group flex items-start gap-3 rounded-lg border border-dashed border-border bg-card px-3 py-2.5 text-left transition-all hover:border-foreground/30 hover:bg-muted/40 sm:col-span-2"
+            >
+              <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-muted text-xs font-bold text-muted-foreground">
+                ―
+              </span>
+              <span className="min-w-0 flex-1 leading-tight">
+                <span className="block text-sm font-medium text-foreground">
+                  Others
+                </span>
+                <span className="mt-0.5 block text-[11px] text-muted-foreground">
+                  อื่น ๆ — ไม่จัดเข้า CTS-R item
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

@@ -88,11 +88,6 @@ export default function ProcessingPage() {
       <PageHeader
         title="AI Processing"
         subtitle="ระบบกำลังเตรียมเนื้อหา session เพื่อการรีวิว — Preparing transcript and AI suggestions."
-        right={
-          <Badge variant="outline" className="gap-1.5">
-            <Sparkles className="h-3 w-3" /> AI-assisted
-          </Badge>
-        }
       />
 
       <div className="px-4 py-10 sm:px-6 lg:px-8">

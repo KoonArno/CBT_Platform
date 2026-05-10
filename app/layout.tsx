@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AppSidebar } from "@/components/AppSidebar";
+import { Toaster } from "sonner";
 import { MuiProvider } from "@/components/providers/MuiProvider";
+import { AuthProvider } from "@/lib/auth-context";
+import { AuthGate } from "@/components/AuthGate";
 
 export const metadata: Metadata = {
   title: "CBT Supinsight — CTS-R Review Assistant",
@@ -18,11 +20,21 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased">
         <MuiProvider>
-          <div className="flex min-h-screen w-full flex-col bg-background md:flex-row">
-            <AppSidebar />
-            <main className="min-w-0 flex-1">{children}</main>
-          </div>
+          <AuthProvider>
+            <AuthGate>{children}</AuthGate>
+          </AuthProvider>
         </MuiProvider>
+        <Toaster
+          position="top-right"
+          richColors
+          closeButton
+          toastOptions={{
+            classNames: {
+              toast:
+                "rounded-lg border border-border bg-card text-foreground shadow-lg",
+            },
+          }}
+        />
       </body>
     </html>
   );

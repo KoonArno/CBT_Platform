@@ -5,6 +5,7 @@ export type CTSRCategory = "Structure" | "Technique" | "Relationship";
 export interface CTSRItem {
   no: number;
   name: string;
+  nameTh: string;
   short: string;
   cat: CTSRCategory;
   tip: string;

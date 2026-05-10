@@ -11,7 +11,6 @@ const STEPS = [
   { to: "/scoring", n: 3, label: "Scoring" },
   { to: "/summary", n: 4, label: "Summary" },
   { to: "/report", n: 5, label: "Report" },
-  { to: "/final", n: 6, label: "Final Review" },
 ] as const;
 
 export function WorkflowStepper() {

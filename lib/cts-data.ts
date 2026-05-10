@@ -1,18 +1,18 @@
 import type { CTSRItem } from "@/lib/types";
 
 export const CTS_R: readonly CTSRItem[] = [
-  { no: 1, name: "Agenda Setting & Adherence", short: "Agenda Setting & Adherence", cat: "Structure", tip: "Set a clear, collaborative agenda using client priorities.", colorVar: "var(--cts-1)" },
-  { no: 2, name: "Feedback", short: "Feedback", cat: "Structure", tip: "Elicit feedback regularly — not just at the end.", colorVar: "var(--cts-2)" },
-  { no: 3, name: "Collaboration", short: "Collaboration", cat: "Relationship", tip: "Use 'we' and 'our'; ask before explaining.", colorVar: "var(--cts-3)" },
-  { no: 4, name: "Pacing & Efficient Use of Time", short: "Pacing & Efficient Use of Time", cat: "Structure", tip: "Watch the clock; signal transitions.", colorVar: "var(--cts-4)" },
-  { no: 5, name: "Interpersonal Effectiveness", short: "Interpersonal Effectiveness", cat: "Relationship", tip: "Project warmth and confidence; respond to ruptures openly.", colorVar: "var(--cts-5)" },
-  { no: 6, name: "Eliciting Appropriate Emotional Expression", short: "Eliciting Appropriate Emotional Expression", cat: "Relationship", tip: "Help the client access and express the emotion that matters.", colorVar: "var(--cts-6)" },
-  { no: 7, name: "Eliciting Key Cognitions", short: "Eliciting Key Cognitions", cat: "Technique", tip: "Surface the hot thoughts driving the maintaining cycle.", colorVar: "var(--cts-7)" },
-  { no: 8, name: "Eliciting Behaviours", short: "Eliciting Behaviours", cat: "Technique", tip: "Identify behaviours that maintain the problem.", colorVar: "var(--cts-8)" },
-  { no: 9, name: "Guided Discovery", short: "Guided Discovery", cat: "Technique", tip: "Ask questions that lead to insight — don't provide the answer.", colorVar: "var(--cts-9)" },
-  { no: 10, name: "Conceptual Integration", short: "Conceptual Integration", cat: "Technique", tip: "Connect today's work to the case formulation.", colorVar: "var(--cts-10)" },
-  { no: 11, name: "Application of Change Methods", short: "Application of Change Methods", cat: "Technique", tip: "Use techniques skilfully and adapt to the individual.", colorVar: "var(--cts-11)" },
-  { no: 12, name: "Homework Setting", short: "Homework Setting", cat: "Technique", tip: "Co-create homework; troubleshoot obstacles in advance.", colorVar: "var(--cts-12)" },
+  { no: 1, name: "Agenda Setting & Adherence", nameTh: "การตั้งวาระและการดำเนินตาม", short: "Agenda Setting & Adherence", cat: "Structure", tip: "Set a clear, collaborative agenda using client priorities.", colorVar: "var(--cts-1)" },
+  { no: 2, name: "Feedback", nameTh: "การให้ฟีดแบ็ก", short: "Feedback", cat: "Structure", tip: "Elicit feedback regularly — not just at the end.", colorVar: "var(--cts-2)" },
+  { no: 3, name: "Collaboration", nameTh: "การร่วมมือ", short: "Collaboration", cat: "Relationship", tip: "Use 'we' and 'our'; ask before explaining.", colorVar: "var(--cts-3)" },
+  { no: 4, name: "Pacing & Efficient Use of Time", nameTh: "การควบคุมจังหวะและเวลา", short: "Pacing & Efficient Use of Time", cat: "Structure", tip: "Watch the clock; signal transitions.", colorVar: "var(--cts-4)" },
+  { no: 5, name: "Interpersonal Effectiveness", nameTh: "ทักษะระหว่างบุคคล", short: "Interpersonal Effectiveness", cat: "Relationship", tip: "Project warmth and confidence; respond to ruptures openly.", colorVar: "var(--cts-5)" },
+  { no: 6, name: "Eliciting Appropriate Emotional Expression", nameTh: "การกระตุ้นการแสดงอารมณ์", short: "Eliciting Appropriate Emotional Expression", cat: "Relationship", tip: "Help the client access and express the emotion that matters.", colorVar: "var(--cts-6)" },
+  { no: 7, name: "Eliciting Key Cognitions", nameTh: "การค้นหาความคิดสำคัญ", short: "Eliciting Key Cognitions", cat: "Technique", tip: "Surface the hot thoughts driving the maintaining cycle.", colorVar: "var(--cts-7)" },
+  { no: 8, name: "Eliciting Behaviours", nameTh: "การค้นหาพฤติกรรม", short: "Eliciting Behaviours", cat: "Technique", tip: "Identify behaviours that maintain the problem.", colorVar: "var(--cts-8)" },
+  { no: 9, name: "Guided Discovery", nameTh: "การชวนค้นพบ", short: "Guided Discovery", cat: "Technique", tip: "Ask questions that lead to insight — don't provide the answer.", colorVar: "var(--cts-9)" },
+  { no: 10, name: "Conceptual Integration", nameTh: "การประมวลความคิดเชิงทฤษฎี", short: "Conceptual Integration", cat: "Technique", tip: "Connect today's work to the case formulation.", colorVar: "var(--cts-10)" },
+  { no: 11, name: "Application of Change Methods", nameTh: "การประยุกต์ใช้วิธีการเปลี่ยนแปลง", short: "Application of Change Methods", cat: "Technique", tip: "Use techniques skilfully and adapt to the individual.", colorVar: "var(--cts-11)" },
+  { no: 12, name: "Homework Setting", nameTh: "การมอบหมายการบ้าน", short: "Homework Setting", cat: "Technique", tip: "Co-create homework; troubleshoot obstacles in advance.", colorVar: "var(--cts-12)" },
 ] as const;
 
 export const SCORE_LABELS = [

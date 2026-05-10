@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { FileText, Search, Plus } from "lucide-react";
+import { FileText, Search, Plus, Clock, Languages, ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -16,8 +16,7 @@ import type { SessionRecord } from "@/lib/types";
 const FILTERS = [
   ["all", "All"],
   ["in-review", "In review"],
-  ["scored", "Scored"],
-  ["signed-off", "Signed off"],
+  ["completed", "Completed"],
 ] as const;
 
 type Filter = (typeof FILTERS)[number][0];
@@ -27,7 +26,10 @@ export default function SessionsPage() {
   const [q, setQ] = useState("");
 
   const filtered = RECENT_SESSIONS.filter((s) => {
-    const matchFilter = filter === "all" || s.status === filter;
+    const matchFilter =
+      filter === "all" ||
+      s.status === filter ||
+      (filter === "completed" && s.status === "signed-off");
     const matchQ =
       !q ||
       [s.id, s.client, s.therapist, s.modality]
@@ -103,26 +105,26 @@ function SessionRow({ session: s }: { session: SessionRecord }) {
             {s.therapist} · {s.modality} · {formatDate(s.date)}
           </div>
         </div>
-        {s.total !== null && (
-          <div className="text-sm font-bold text-foreground">{s.total}/72</div>
-        )}
         <StatusBadge status={s.status} />
-        <span className="text-xs font-medium text-primary">Open →</span>
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <Clock className="h-3 w-3" /> 52m
+          </span>
+          <span className="hidden items-center gap-1 sm:flex">
+            <Languages className="h-3 w-3" /> TH/EN
+          </span>
+        </div>
+        <ArrowRight className="h-4 w-4 text-muted-foreground" />
       </Link>
     </li>
   );
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const map: Record<
-    string,
-    { variant: "success" | "warning" | "secondary" | "outline"; label: string }
-  > = {
-    "signed-off": { variant: "success", label: "Signed off" },
-    scored: { variant: "secondary", label: "Scored" },
-    "in-review": { variant: "warning", label: "In review" },
-    draft: { variant: "outline", label: "Draft" },
-  };
-  const s = map[status] ?? map.draft;
-  return <Badge variant={s.variant}>{s.label}</Badge>;
+  const isCompleted = status === "signed-off";
+  return (
+    <Badge variant={isCompleted ? "success" : "warning"}>
+      {isCompleted ? "Completed" : "In review"}
+    </Badge>
+  );
 }

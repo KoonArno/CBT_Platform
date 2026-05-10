@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   Home,
   FolderKanban,
@@ -13,8 +14,10 @@ import {
   PanelLeft,
   Menu,
   X,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth-context";
 
 interface NavItem {
   to: string;
@@ -25,16 +28,27 @@ interface NavItem {
 }
 
 const ITEMS: ReadonlyArray<NavItem> = [
-  { to: "/", label: "หน้าหลัก", sub: "Home", icon: Home, exact: true },
+  { to: "/dashboard", label: "หน้าหลัก", sub: "Home", icon: Home, exact: true },
   { to: "/sessions", label: "Sessions", sub: "เซสชั่น", icon: FolderKanban },
   { to: "/report", label: "รายงาน", sub: "Reports", icon: FileText },
-  { to: "/settings", label: "ตั้งค่า", sub: "Settings", icon: Settings },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const displayName = user?.name ?? "Supervisor";
+  const displayRole = user?.role ?? "Supervisor Mode";
+  const initial = displayName.charAt(0).toUpperCase();
+
+  const handleLogout = () => {
+    logout();
+    toast("ออกจากระบบแล้ว");
+    router.replace("/login");
+  };
 
   const isActive = (item: NavItem) =>
     item.exact ? pathname === item.to : pathname.startsWith(item.to);
@@ -178,12 +192,34 @@ export function AppSidebar() {
           )}
         >
           <div className="rounded-md bg-accent/60 p-3">
-            <div className="text-xs font-medium text-accent-foreground">
-              Supervisor Mode
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                {initial}
+              </div>
+              <div className="min-w-0 flex-1 leading-tight">
+                <div className="truncate text-xs font-medium text-accent-foreground">
+                  {displayName}
+                </div>
+                <div className="truncate text-[11px] text-muted-foreground">
+                  {displayRole}
+                </div>
+              </div>
+              <Link
+                href="/settings"
+                aria-label="Settings"
+                className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+                onClick={() => setMobileOpen(false)}
+              >
+                <Settings className="h-4 w-4" />
+              </Link>
             </div>
-            <div className="mt-0.5 text-[11px] text-muted-foreground">
-              Dr. Wattana · CBT Lab
-            </div>
+            <button
+              onClick={handleLogout}
+              className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-md border border-border bg-card px-2 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-background"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              Sign out
+            </button>
           </div>
         </div>
       </aside>

@@ -221,7 +221,8 @@ export default function SummaryPage() {
          </div>
 
           {/* Item breakdown by category — right column, full height */}
-          <div className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-sm self-start lg:sticky lg:top-4">
+          <div className="min-w-0 self-start lg:sticky lg:top-4 space-y-4">
+          <div className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5 py-3">
             <h3 className="text-sm font-semibold">Item breakdown</h3>
             {/* Gradient legend */}
@@ -271,12 +272,8 @@ export default function SummaryPage() {
                                 </Badge>
                               )}
                             </div>
-                            <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
-                              <span className="flex items-center gap-1">
-                                <Sparkles className="h-2.5 w-2.5" /> AI: {s.aiScore}
-                              </span>
-                              <span className="text-border">·</span>
-                              <span>{SCORE_LABELS[final]}</span>
+                            <div className="mt-0.5 text-[11px] text-muted-foreground">
+                              {SCORE_LABELS[final]}
                             </div>
                           </div>
                           {/* score bar */}
@@ -299,6 +296,12 @@ export default function SummaryPage() {
               );
             })}
           </div>
+          </div>
+          <Link href="/report" className="block">
+            <Button className="h-12 w-full text-sm font-semibold">
+              Continue to report <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
           </div>
         </div>
       </div>

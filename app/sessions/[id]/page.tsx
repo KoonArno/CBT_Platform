@@ -6,13 +6,9 @@ import {
   ScrollText,
   ListChecks,
   BarChart3,
-  ShieldCheck,
   Clock,
-  Languages,
   Calendar,
   User,
-  Stethoscope,
-  Award,
   Download,
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
@@ -41,10 +37,18 @@ const STATUS_MAP: Record<
   string,
   { variant: "success" | "warning" | "secondary" | "outline"; label: string }
 > = {
-  "signed-off": { variant: "success", label: "Signed off" },
-  scored: { variant: "secondary", label: "Scored" },
+  "signed-off": { variant: "success", label: "Completed" },
+  scored: { variant: "warning", label: "In review" },
   "in-review": { variant: "warning", label: "In review" },
-  draft: { variant: "outline", label: "Draft" },
+  draft: { variant: "warning", label: "In review" },
+};
+
+const SESSION_DESCRIPTIONS: Record<string, string> = {
+  "S-1042": "หัวข้อสนทนา: ความกังวลเรื่องงาน การหลีกเลี่ยงการสื่อสารกับหัวหน้า และการทดลองพฤติกรรมระหว่างสัปดาห์",
+  "S-1031": "หัวข้อสนทนา: ความคิดอัตโนมัติเกี่ยวกับความล้มเหลว ความคาดหวังต่อตนเอง และการวางแผนกิจกรรมที่สร้างความมั่นใจ",
+  "S-1028": "หัวข้อสนทนา: ความสัมพันธ์ในครอบครัว การตีความคำพูดของคนใกล้ชิด และการฝึกตรวจสอบหลักฐานทางความคิด",
+  "S-1019": "หัวข้อสนทนา: อาการตื่นตระหนกในที่สาธารณะ พฤติกรรมความปลอดภัย และการออกแบบ exposure แบบค่อยเป็นค่อยไป",
+  "S-1007": "หัวข้อสนทนา: ปัญหาการนอน ความเครียดสะสม และการปรับกิจวัตรก่อนนอนร่วมกับการบันทึกความคิด",
 };
 
 export default async function SessionDetailPage({
@@ -91,21 +95,13 @@ export default async function SessionDetailPage({
             <div>
               <div className="flex items-center gap-2">
                 <Badge variant={status.variant}>{status.label}</Badge>
-                {isFinished && (
-                  <Badge variant="outline" className="gap-1">
-                    <ShieldCheck className="h-3 w-3" /> Signed off
-                  </Badge>
-                )}
               </div>
               <h2 className="mt-2 text-2xl font-bold text-foreground">
                 {session.client}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Conducted by{" "}
-                <span className="font-medium text-foreground">
-                  {session.therapist}
-                </span>{" "}
-                · {session.modality}
+                {SESSION_DESCRIPTIONS[session.id] ??
+                  "หัวข้อสนทนา: ประเด็นหลักของผู้รับบริการ ความคิด อารมณ์ และพฤติกรรมที่เกี่ยวข้องกับเป้าหมายการบำบัด"}
               </p>
             </div>
             {hasScores && (
@@ -134,38 +130,12 @@ export default async function SessionDetailPage({
         {/* Meta grid */}
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Meta icon={<User className="h-4 w-4" />} label="Therapist" value={session.therapist} />
-          <Meta icon={<Stethoscope className="h-4 w-4" />} label="Modality" value={session.modality} />
+          <Meta icon={<FileText className="h-4 w-4" />} label="Session No." value={session.id} />
           <Meta icon={<Calendar className="h-4 w-4" />} label="Date" value={formatDate(session.date)} />
           <Meta
             icon={<Clock className="h-4 w-4" />}
             label="Duration"
             value={isCurrent ? SESSION_META.duration : "—"}
-          />
-          <Meta
-            icon={<Languages className="h-4 w-4" />}
-            label="Language"
-            value={isCurrent ? SESSION_META.language : "Thai / English mixed"}
-          />
-          <Meta
-            icon={<FileText className="h-4 w-4" />}
-            label="File"
-            value={isCurrent ? SESSION_META.fileName : `${session.id.toLowerCase()}-transcript.docx`}
-          />
-          <Meta icon={<User className="h-4 w-4" />} label="Supervisor" value="Dr. Wattana" />
-          <Meta
-            icon={<Award className="h-4 w-4" />}
-            label="Overall profile"
-            value={
-              avg === null
-                ? "—"
-                : avg >= 5
-                ? "Advanced"
-                : avg >= 4
-                ? "Competent"
-                : avg >= 3
-                ? "Developing"
-                : "Beginner"
-            }
           />
         </div>
 
@@ -180,29 +150,33 @@ export default async function SessionDetailPage({
             </p>
           </div>
           <div className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4">
-            <ActionCard
-              icon={<ScrollText className="h-4 w-4" />}
-              title="Review"
-              sub="ดู transcript + evidence"
-              href="/review"
-            />
-            <ActionCard
-              icon={<ListChecks className="h-4 w-4" />}
-              title="Scoring"
-              sub="คะแนน CTS-R 12 ข้อ"
-              href="/scoring"
-            />
+            {!isFinished && (
+              <>
+                <ActionCard
+                  icon={<ScrollText className="h-4 w-4" />}
+                  title="Review"
+                  sub="ดู transcript + evidence"
+                  href="/review"
+                />
+                <ActionCard
+                  icon={<ListChecks className="h-4 w-4" />}
+                  title="Scoring"
+                  sub="คะแนน CTS-R 12 ข้อ"
+                  href="/scoring"
+                />
+              </>
+            )}
             <ActionCard
               icon={<BarChart3 className="h-4 w-4" />}
               title="Summary"
               sub="กราฟ + feedback"
-              href="/summary"
+              href={isFinished ? `/sessions/${session.id}/summary` : "/summary"}
             />
             <ActionCard
               icon={<FileText className="h-4 w-4" />}
               title="Report"
               sub="รายงานสำหรับพิมพ์/ส่ง"
-              href="/report"
+              href={isFinished ? `/sessions/${session.id}/report` : "/report"}
               primary={isFinished}
             />
           </div>
@@ -286,13 +260,43 @@ function ActionCard({
   sub,
   href,
   primary,
+  disabled,
 }: {
   icon: React.ReactNode;
   title: string;
   sub: string;
   href: string;
   primary?: boolean;
+  disabled?: boolean;
 }) {
+  const content = (
+    <>
+      <div
+        className={cn(
+          "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg",
+          primary
+            ? "bg-primary text-primary-foreground"
+            : "bg-accent text-accent-foreground",
+          disabled && "bg-muted text-muted-foreground",
+        )}
+      >
+        {icon}
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="text-sm font-semibold text-foreground">{title}</div>
+        <div className="truncate text-[11px] text-muted-foreground">{sub}</div>
+      </div>
+    </>
+  );
+
+  if (disabled) {
+    return (
+      <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/40 p-3 opacity-60">
+        {content}
+      </div>
+    );
+  }
+
   return (
     <Link
       href={href}
@@ -303,20 +307,7 @@ function ActionCard({
           : "border-border bg-surface/40 hover:border-primary/40 hover:bg-accent/30",
       )}
     >
-      <div
-        className={cn(
-          "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg",
-          primary
-            ? "bg-primary text-primary-foreground"
-            : "bg-accent text-accent-foreground",
-        )}
-      >
-        {icon}
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="text-sm font-semibold text-foreground">{title}</div>
-        <div className="truncate text-[11px] text-muted-foreground">{sub}</div>
-      </div>
+      {content}
     </Link>
   );
 }
