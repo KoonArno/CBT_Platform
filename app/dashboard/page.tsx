@@ -5,8 +5,6 @@ import {
   Upload,
   FileText,
   ArrowRight,
-  Clock,
-  Languages,
   ClipboardList,
   Activity,
 } from "lucide-react";
@@ -36,6 +34,16 @@ const STATS = [
     sub: "เสร็จสิ้นแล้ว",
   },
 ] as const;
+
+const SESSION_SHORT_DESCRIPTIONS: Record<string, string> = {
+  "S-1042": "ความกังวลเรื่องงานและการหลีกเลี่ยงการสื่อสาร",
+  "S-1038": "ความคิดอัตโนมัติและการวางแผนกิจกรรม",
+  "S-1031": "ความสัมพันธ์ในครอบครัวและการตรวจสอบหลักฐาน",
+  "S-1024": "อาการตื่นตระหนกและพฤติกรรมความปลอดภัย",
+  "S-1019": "ปัญหาการนอนและความเครียดสะสม",
+};
+
+const INITIAL_ARCHIVED_IDS: readonly string[] = ["S-1024"];
 
 export default function DashboardPage() {
   return (
@@ -104,7 +112,11 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="p-0">
             <ul className="divide-y divide-border">
-              {RECENT_SESSIONS.slice(0, 4).map((s) => (
+              {RECENT_SESSIONS.filter(
+                (s) => !INITIAL_ARCHIVED_IDS.includes(s.id),
+              )
+                .slice(0, 4)
+                .map((s) => (
                 <li key={s.id}>
                   <Link
                     href={`/sessions/${s.id}`}
@@ -118,19 +130,22 @@ export default function DashboardPage() {
                         {s.id} · {s.client}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {s.therapist} · {s.modality} · {formatDate(s.date)}
+                        {s.therapist} ·{" "}
+                        {SESSION_SHORT_DESCRIPTIONS[s.id] ?? s.modality} ·{" "}
+                        {formatDate(s.date)}
                       </div>
                     </div>
-                    <StatusBadge status={s.status} />
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" /> 52m
-                      </span>
-                      <span className="hidden items-center gap-1 sm:flex">
-                        <Languages className="h-3 w-3" /> TH/EN
+                    <div className="ml-auto flex items-center gap-3 text-sm">
+                      {s.total !== null && (
+                        <span className="font-bold tabular-nums text-foreground">
+                          {s.total}/72
+                        </span>
+                      )}
+                      <StatusBadge status={s.status} />
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
+                        Open <ArrowRight className="h-3.5 w-3.5" />
                       </span>
                     </div>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
                   </Link>
                 </li>
               ))}

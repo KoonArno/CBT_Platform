@@ -89,7 +89,7 @@ export default function UploadPage() {
     <>
       <PageHeader
         title="Upload Session Transcript"
-        subtitle="เริ่มการรีวิวเซสชันการบำบัด ด้วยการอัปโหลดถอดเทปการสนทนาเพื่อประเมิน CTS-R"
+        subtitle="เริ่มการรีวิวเซสชันการบำบัด ด้วยการอัปโหลดถอดเทปการบำบัดเพื่อประเมิน CTS-R"
       />
 
       <div className="space-y-6 px-4 py-6 sm:px-6 lg:px-8">
