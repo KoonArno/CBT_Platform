@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { AppSidebar } from "@/components/AppSidebar";
 
-const PUBLIC_PATHS = new Set(["/login", "/signup"]);
+const PUBLIC_PATHS = new Set(["/login", "/signup", "/forgot-password"]);
 
 export function AuthGate({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -21,7 +21,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
     } else if (user && isPublic) {
       router.replace("/");
     }
-  }, [loading, user, isPublic, router]);
+  }, [loading, pathname, user, isPublic, router]);
 
   if (loading) {
     return (

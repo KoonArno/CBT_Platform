@@ -1,15 +1,23 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft, FileText, Target } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { SummaryChart } from "@/app/sessions/[id]/summary/SummaryChart";
 import { CTS_R, SCORE_LABELS, scoreLabel } from "@/lib/cts-data";
 import { AI_SCORES, MOCK_STUDENT_FEEDBACK, RECENT_SESSIONS } from "@/lib/mock-data";
 import { cn, formatDate } from "@/lib/utils";
 
 const TOTAL = AI_SCORES.reduce((a, s) => a + (s.finalScore ?? 0), 0);
 const AVG = TOTAL / 12;
+const RADAR_DATA = CTS_R.map((c) => ({
+  name:
+    c.short.length > 18
+      ? `${c.no}. ${c.short.slice(0, 16)}…`
+      : `${c.no}. ${c.short}`,
+  value: AI_SCORES.find((s) => s.itemNo === c.no)?.finalScore ?? 0,
+}));
 
 const SCORE_COLORS: Record<number, { bg: string; text: string; bar: string }> = {
   0: { bg: "bg-[#ef4444]/15", text: "text-[#ef4444]", bar: "bg-[#ef4444]" },
@@ -73,6 +81,23 @@ export default async function SessionSummaryPage({
               <FeedbackBlock title="จุดแข็ง" value={MOCK_STUDENT_FEEDBACK.strengths} />
               <FeedbackBlock title="พัฒนา" value={MOCK_STUDENT_FEEDBACK.growth} />
               <FeedbackBlock title="ข้อเสนอแนะ" value={MOCK_STUDENT_FEEDBACK.suggestions} />
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-border bg-card shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5 py-3">
+            <div className="flex items-center gap-2">
+              <Target className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-semibold">Competency profile</h3>
+            </div>
+            <span className="text-[11px] text-muted-foreground">
+              12 items × 0–6
+            </span>
+          </div>
+          <div className="p-2 sm:p-4">
+            <div className="h-[280px] min-w-0 sm:h-[380px]">
+              <SummaryChart data={RADAR_DATA} />
             </div>
           </div>
         </div>

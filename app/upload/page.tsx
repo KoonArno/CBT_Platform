@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import {
   Upload,
   FileText,
@@ -70,7 +70,7 @@ export default function UploadPage() {
     setFile(f);
     setDone(false);
     setProgress(0);
-    toast.info(`กำลังประมวลผล ${f.name}`);
+    toast(`กำลังประมวลผล ${f.name}`);
     let p = 0;
     const tick = setInterval(() => {
       p += 12;

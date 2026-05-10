@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { usePathname } from "next/navigation";
+import { toast } from "react-hot-toast";
 import {
   Home,
   FolderKanban,
@@ -35,7 +35,6 @@ const ITEMS: ReadonlyArray<NavItem> = [
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
   const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -47,7 +46,7 @@ export function AppSidebar() {
   const handleLogout = () => {
     logout();
     toast("ออกจากระบบแล้ว");
-    router.replace("/login");
+    window.location.replace("/login");
   };
 
   const isActive = (item: NavItem) =>

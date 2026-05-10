@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import {
   ArrowRight,
   Check,
@@ -114,14 +114,25 @@ export default function ReviewPage() {
   const remove = (id: string) => {
     const target = evidence.find((e) => e.id === id);
     setEvidence((prev) => prev.filter((e) => e.id !== id));
-    toast("ลบ evidence แล้ว", {
-      action: target
-        ? {
-            label: "Undo",
-            onClick: () => setEvidence((prev) => [...prev, target]),
-          }
-        : undefined,
-    });
+    if (!target) {
+      toast("ลบ evidence แล้ว");
+      return;
+    }
+    toast.custom((t) => (
+      <div className="flex items-center gap-3 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground shadow-lg">
+        <span>ลบ evidence แล้ว</span>
+        <button
+          type="button"
+          onClick={() => {
+            setEvidence((prev) => [...prev, target]);
+            toast.dismiss(t.id);
+          }}
+          className="text-xs font-medium text-primary hover:underline"
+        >
+          Undo
+        </button>
+      </div>
+    ));
   };
 
   const taggingParagraph = useMemo(

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Toaster } from "sonner";
+import { Toaster } from "react-hot-toast";
 import { MuiProvider } from "@/components/providers/MuiProvider";
 import { AuthProvider } from "@/lib/auth-context";
 import { AuthGate } from "@/components/AuthGate";
@@ -26,13 +26,9 @@ export default function RootLayout({
         </MuiProvider>
         <Toaster
           position="top-right"
-          richColors
-          closeButton
           toastOptions={{
-            classNames: {
-              toast:
-                "rounded-lg border border-border bg-card text-foreground shadow-lg",
-            },
+            className:
+              "!rounded-lg !border !border-border !bg-card !text-foreground !shadow-lg",
           }}
         />
       </body>

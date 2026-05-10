@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, BookOpen, CheckCircle2, Save } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Input";
