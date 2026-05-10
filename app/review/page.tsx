@@ -448,8 +448,18 @@ export default function ReviewPage() {
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       placeholder="Search the transcript"
-                      className="h-9 bg-surface pl-8 text-sm"
+                      className="h-9 bg-surface pl-8 pr-8 text-sm"
                     />
+                    {search && (
+                      <button
+                        type="button"
+                        onClick={() => setSearch("")}
+                        aria-label="Clear transcript search"
+                        className="absolute right-2 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    )}
                   </div>
                   <Button
                     variant={showFilter ? "default" : "outline"}
